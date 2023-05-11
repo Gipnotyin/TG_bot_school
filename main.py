@@ -4,8 +4,9 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage, Redis
 
-from handlers import start, register, update_user, admin_handlers
+from handlers import start, register, update_user, admin_handlers, solution
 from config.config import load_config, Config
+from keyboard.menu import set_main_menu
 
 logger = logging.getLogger(__name__)
 config: Config = load_config('.env')
@@ -13,9 +14,10 @@ config: Config = load_config('.env')
 
 def register_routers(dp: Dispatcher):
     dp.include_router(start.router)
-    dp.include_router(register.router)
     dp.include_router(update_user.router)
+    dp.include_router(register.router)
     dp.include_router(admin_handlers.router)
+    dp.include_router(solution.router)
 
 
 async def main():
@@ -31,6 +33,8 @@ async def main():
     dp: Dispatcher = Dispatcher(storage=storage)
 
     register_routers(dp)
+
+    await set_main_menu(bot)
 
     try:
         await bot.delete_webhook()

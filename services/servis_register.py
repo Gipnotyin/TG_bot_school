@@ -1,5 +1,8 @@
+from aiogram.types import Message
+
 from keyboard.keyboard import create_inline_kb
 from config.config import Config, load_config
+from database.database import return_attempts, update_rating
 
 config: Config = load_config('.env')
 
@@ -35,3 +38,8 @@ def is_admin(id_user: int) -> bool:
     else:
         return False
 
+
+async def add_rating_score(message: Message, id_solution: int):
+    attempts = await return_attempts(message.from_user.id, id_solution)
+    score = 10 if attempts == 1 else 5 if 1 < attempts < 5 else 3
+    await update_rating(message.from_user.id, score)
